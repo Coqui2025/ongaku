@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ongaku Listening Bar - Propuesta para Inversores</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F3F4F6;
+        }
+        .text-shadow {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 100%;
+            max-width: 600px;
+        }
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        thead th {
+            background-color: #4A5568;
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #F9FAFB;
+        }
+        tbody tr:hover {
+            background-color: #F3F4F6;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #023E8A;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <!-- Palette: Brilliant Blues (#023E8A, #0077B6, #0096C7, #00B4D8, #48CAE4, #90E0EF, #ADE8F4, #CAF0F8) -->
+    <!-- Narrative Plan:
+    1. Header: Catchy title.
+    2. El Concepto: What is Ongaku, its inspiration, unique experience, and differentiation.
+    3. Mercado y Oportunidad: Target audience, location analysis, and market potential.
+    4. Análisis de Mercado y Competencia: Overview of Buenos Aires gastronomic scene, competitive landscape with existing listening bars.
+    5. El Fenómeno Global de los Listening Bars: Context of the global trend, why it's relevant.
+    6. Plan de Negocio y Estrategia: New section for detailed business plan.
+    7. La Inversión y Proyecciones: Breakdown of initial investment and monthly cost structure.
+    8. Proyecciones de Rentabilidad y Escenarios de Clientes: Annual profitability projections for the main scenario (900 clients) and new scenarios (300, 600, 1200 clients).
+    9. Retorno de la Inversión (ROI) y Escenarios: ROI analysis for different scenarios and key performance indicators, including new interactive recovery time chart.
+    10. Preguntas Frecuentes para Inversores: Interactive Q&A using Gemini API.
+    11. Conclusión: Final summary and call to action.
+    -->
+    <!-- Chart Selection Justification:
+    - Gender Distribution Chart: Goal: Inform (single data point). Chosen Visualization: Donut Chart (Chart.js, Canvas). Justification: Clearly shows proportion of two categories.
+    - Investment Chart: Goal: Compare (composition). Chosen Visualization: Donut Chart (Chart.js, Canvas). Justification: Effectively shows proportion of each investment category to the total.
+    - Financial Projection Chart (Monthly): Goal: Change (over time) & Compare (multiple series). Chosen Visualization: Bar Chart (Chart.js, Canvas). Justification: Good for showing monthly trends and comparing income vs net result.
+    - ROI Chart: Goal: Compare (categories/scenarios). Chosen Visualization: Bar Chart (horizontal, Chart.js, Canvas). Justification: Clear comparison of ROI percentages across different scenarios.
+    - New Client Scenarios Chart (Annual Net Result): Goal: Compare (categories/scenarios) & Inform (single data point for each scenario). Chosen Visualization: Bar Chart (Chart.js, Canvas). Justification: Visually compares the annual net result for different client volume scenarios.
+    - Recovery Time Chart: Goal: Relationships (correlation) & Inform (specific data points). Chosen Visualization: Line chart (Chart.js, Canvas). Justification: Clearly shows how recovery time decreases with increasing client volume, allowing for visual interpolation.
+    - All charts use Chart.js for Canvas rendering and adhere to label wrapping and tooltip configuration. No SVG or Mermaid JS used.
+    -->
+
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-500 text-white text-center py-20 px-4">
+        <h1 class="text-5xl md:text-6xl font-black mb-4 text-shadow">ONGAKU (音楽)</h1>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+        
+        <!-- Concepto y Diferenciación -->
+        <section class="mb-12">
+            <h2 class="text-4xl font-bold text-center mb-8 text-blue-900">El Concepto</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center text-center transform transition duration-300 hover:scale-105">
+                    <span class="text-5xl mb-4 text-blue-700">🎵</span>
+                    <h3 class="text-2xl font-bold mb-3 text-blue-800">Inspiración Japonesa</h3>
+                    <p class="text-gray-600 text-sm">Refugio íntimo para la escucha de música en vinilo y alta fidelidad, inspirado en los 'Jazz Kissa'. Un ambiente sensorial único donde la música es protagonista.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center text-center transform transition duration-300 hover:scale-105">
+                    <span class="text-5xl mb-4 text-blue-700">🍣</span>
+                    <h3 class="text-2xl font-bold mb-3 text-blue-800">Gastronomía y Coctelería</h3>
+                    <p class="text-600 text-sm">Exquisita comida japonesa (sushi, sashimi, platos de taberna) y coctelería de autor (sake, whisky japonés), diseñadas para maridar con la música y el ambiente.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center text-center transform transition duration-300 hover:scale-105">
+                    <span class="text-5xl mb-4 text-blue-700">✨</span>
+                    <h3 class="text-2xl font-bold mb-3 text-blue-800">Experiencia Curada</h3>
+                    <p class="text-gray-600 text-sm">Cada detalle, desde la calidad del sonido hasta la presentación del plato, está meticulosamente cuidado. Ciclos de DJs y eventos temáticos garantizan una oferta cultural siempre fresca.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center text-center transform transition duration-300 hover:scale-105">
+                    <span class="text-5xl mb-4 text-blue-700">🛠️</span>
+                    <h3 class="text-2xl font-bold mb-3 text-blue-800">Diseño y Equipamiento</h3>
+                    <p class="text-gray-600 text-sm">Colaboración con Kraftwelt para un diseño interior de vanguardia. Equipado con un sistema de audio Hi-End, meticulosamente seleccionado para una experiencia inmersiva y única.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mercado y Público Objetivo -->
+        <section class="mb-12 bg-white p-8 rounded-lg shadow-xl">
+            <h2 class="text-4xl font-bold text-center mb-8 text-blue-900">Mercado y Oportunidad</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div class="flex flex-col h-full">
+                    <h3 class="text-2xl font-bold mb-3 text-blue-800">Nuestro Público Objetivo</h3>
+                    <p class="text-gray-700 mb-4">Nos dirigimos a un nicho de mercado en crecimiento: individuos de <b>25 a 40 años</b>, con un poder adquisitivo medio-alto, culturalmente curiosos y que valoran experiencias auténticas y de alta calidad. Este segmento, que incluye tanto a locales como a turistas, está activamente buscando alternativas a la vida nocturna tradicional, priorizando ambientes sofisticados y propuestas de valor únicas.</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-600 pl-5">
+                        <li><b>Amantes de la Música:</b> Audiófilos y melómanos que aprecian la calidad de sonido y la curaduría musical.</li>
+                        <li><b>Foodies y Conocedores:</b> Apasionados por la gastronomía y la coctelería de autor.</li>
+                        <li><b>Comunidad Creativa:</b> Artistas, diseñadores y profesionales que buscan espacios de inspiración y networking.</li>
+                        <li><b>Turistas Internacionales:</b> Visitantes que buscan experiencias locales auténticas y memorables.</li>
+                    </ul>
+                </div>
+                <div class="flex flex-col h-full">
+                    <h3 class="text-2xl font-bold mb-3 text-blue-800 text-center">Distribución Demográfica</h3>
+                    <p class="text-gray-600 text-center mb-4">El barrio de Palermo presenta una distribución demográfica favorable, con una ligera mayoría de mujeres, lo que indica un público diverso y activo dentro del rango etario objetivo de 25 a 40 años.</p>
+                    <div class="chart-container flex-grow">
+                        <canvas id="genderDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Análisis de Mercado y Competencia -->
+        <section class="mb-12 bg-white p-8 rounded-lg shadow-xl">
+            <h2 class="text-4xl font-bold text-center mb-8 text-blue-900">Análisis de Mercado y Competencia</h2>
+            <p class="text-gray-700 mb-6">La industria gastronómica en Buenos Aires es vibrante y competitiva, especialmente en Palermo, epicentro de tendencias. Sin embargo, existe una clara oportunidad para propuestas innovadoras como Ongaku. Si bien hay bares de alta calidad, la fusión de música en alta fidelidad y gastronomía japonesa curada es un nicho poco explotado, lo que nos permite posicionarnos como un referente.</p>
+            <h3 class="text-2xl font-bold mb-4 text-blue-800">Panorama Competitivo Local</h3>
+            <p class="text-gray-600 mb-4">Aunque Ongaku ofrece una propuesta única, reconocemos la presencia de otros establecimientos que comparten elementos de nuestro concepto. Nuestro diferencial radica en la profundidad de la experiencia sonora y la autenticidad de la propuesta japonesa.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="border border-blue-200 p-4 rounded-lg shadow-md flex flex-col items-start text-left">
+                    <h4 class="text-xl font-semibold mb-2 text-blue-700">Bim-binilo</h4>
+                    <p class="text-gray-600 text-sm mb-1">Ubicación: Recoleta.</p>
+                    <p class="text-gray-600 text-sm mb-1">Propuesta: Curaduría musical y coctelería.</p>
+                    <p class="text-gray-600 text-sm mb-1">Fortalezas: Ambiente logrado, buena ubicación.</p>
+                    <p class="text-gray-600 text-sm">Debilidades: Capacidad limitada, reservas ineficientes.</p>
+                </div>
+                <div class="border border-blue-200 p-4 rounded-lg shadow-md flex flex-col items-start text-left">
+                    <h4 class="text-xl font-semibold mb-2 text-blue-700">Victor Audio Bar</h4>
+                    <p class="text-gray-600 text-sm mb-1">Ubicación: Palermo.</p>
+                    <p class="text-gray-600 text-sm mb-1">Propuesta: Coctelería clásica y equipos de audio innovadores.</p>
+                    <p class="text-gray-600 text-sm mb-1">Fortalezas: Alianzas clave, diseño y ambientación destacables.</p>
+                    <p class="text-gray-600 text-sm">Debilidades: Capacidad limitada, propuesta de nicho.</p>
+                </div>
+                <div class="border border-blue-200 p-4 rounded-lg shadow-md flex flex-col items-start text-left">
+                    <h4 class="text-xl font-semibold mb-2 text-blue-700">Mixtape</h4>
+                    <p class="text-gray-600 text-sm mb-1">Ubicación: Núñez.</p>
+                    <p class="text-gray-600 text-sm mb-1">Propuesta: Gastronomía de alto nivel con equipo de renombre.</p>
+                    <p class="text-gray-600 text-sm">Debilidades: Capacidad limitada, ubicación discreta.</p>
+                </div>
+            </div>
+            <h3 class="text-2xl font-bold mb-4 text-blue-800">El Fenómeno Global de los Listening Bars</h3>
+            <p class="text-gray-700">El concepto de "listening bar" está experimentando un auge significativo a nivel mundial, especialmente en ciudades cosmopolitas como Nueva York, Londres, Ciudad de México, Barcelona y, por supuesto, Japón. Esta tendencia responde a una creciente demanda por experiencias sociales más íntimas, contemplativas y centradas en la calidad, en contraposición a los ruidosos bares tradicionales. Los consumidores buscan espacios donde la música sea el foco principal, acompañada de una oferta gastronómica y de bebidas de alta calidad. Ongaku se posiciona estratégicamente para capitalizar esta ola global, trayendo un concepto probado y exitoso a un mercado sediento de innovación como Buenos Aires.</p>
+        </section>
+
+        <!-- Plan de Negocio y Estrategia -->
+        <section class="mb-12 bg-white p-8 rounded-lg shadow-xl">
+            <h2 class="text-4xl font-bold text-center mb-8 text-blue-900">Plan de Negocio y Estrategia</h2>
+            <p class="text-gray-700 mb-6">Para asegurar el éxito y la sostenibilidad de Ongaku Listening Bar, hemos diseñado un plan de negocio y estrategia integral que abarca desde la generación de ingresos hasta la atracción de clientes y posibles vías de expansión a futuro.</p>
+
+            <h3 class="text-2xl font-bold mb-4 text-blue-800">1. Modelo de Ingresos: Diversificación y Valor Añadido</h3>
+            <ul class="list-disc list-inside space-y-2 text-gray-600 pl-5 mb-6">
+                <li>Venta Principal: Gastronomía y Coctelería Premium: Pilar fundamental, con coctelería de autor, whiskies japoneses, sakes premium y gastronomía japonesa de alta calidad. Ticket promedio proyectado de $30.000 ARS.</li>
+                <li>Eventos Especiales y Curaduría Musical: Ingresos adicionales por ciclos de DJs, noches temáticas y charlas culturales, atrayendo a un público dispuesto a pagar por experiencias exclusivas.</li>
+                <li>Alquiler del Espacio (Opcional y Selectivo): Oportunidad de ingresos por eventos privados, lanzamientos de productos o reuniones corporativas, aprovechando el diseño único y la acústica del local.</li>
+                <li>Venta de Merchandising: Línea de marca Ongaku (vinilos curados, ropa, accesorios) que genera ingresos complementarios y fomenta la lealtad.</li>
+                <li>Colaboraciones y Patrocinios: Alianzas estratégicas con marcas premium, sellos discográficos y artistas para eventos patrocinados y co-marketing.</li>
+                <li>Programas de Lealtad y Membresías (Potencial Futuro): Generación de ingresos recurrentes y fomento de la comunidad a través de beneficios exclusivos.</li>
+            </ul>
+
+            <h3 class="text-2xl font-bold mb-4 text-blue-800">2. Estrategia de Marketing y Ventas: Atracción y Fidelización</h3>
+            <ul class="list-disc list-inside space-y-2 text-gray-600 pl-5 mb-6">
+                <li>Redes Sociales como Eje Central: Instagram, TikTok y YouTube para vitrina visual, contenido dinámico y livesets completos.</li>
+                <li>Marketing de Contenidos: Contenido de valor sobre cultura japonesa, audio Hi-Fi y la historia de Ongaku.</li>
+                <li>Eventos y Colaboraciones Estratégicas: Programación mensual de eventos con DJs y alianzas para generar expectación y alcanzar nuevas audiencias.</li>
+                <li>Boca a Boca y Experiencia del Cliente: La calidad inigualable del sonido, gastronomía y servicio como motores principales de recomendaciones orgánicas.</li>
+                <li>Relaciones Públicas: Contacto con medios especializados para reseñas y menciones que amplifiquen visibilidad y credibilidad.</li>
+                <li>CRM y Programas de Fidelización: Gestión de relaciones con clientes para personalizar la comunicación y fomentar la recurrencia.</li>
+                <li>SEO Local y Google My Business: Optimización para búsquedas locales y gestión activa del perfil online.</li>
+            </ul>
+
+            <h3 class="text-2xl font-bold mb-4 text-blue-800">3. Estrategia de Expansión (Opcional): Visión a Futuro</h3>
+            <ul class="list-disc list-inside space-y-2 text-gray-600 pl-5">
+                <li>Consolidación del Modelo Actual: Prioridad en optimizar rentabilidad y experiencia en la ubicación principal.</li>
+                <li>Replicación del Concepto: Evaluación de nuevas aperturas en ciudades clave de Argentina (Córdoba, Rosario) o Latinoamérica (Santiago, Montevideo).</li>
+                <li>Diversificación de Formatos: Exploración de "Ongaku Café" diurno o "Ongaku Tea House" para maximizar el uso de espacios.</li>
+                <li>Experiencias Pop-Up y Colaboraciones Itinerantes: Eventos temporales para probar nuevos mercados y expandir el reconocimiento de marca.</li>
+                <li>Modelo de Franquicia (Largo Plazo): Potencial de expansión rápida con capital externo una vez estandarizado el modelo.</li>
+            </ul>
+        </section>
+
+        <!-- La Inversión y Proyecciones -->
+        <section class="mb-12">
+            <h2 class="text-4xl font-bold text-center mb-8 text-blue-900">La Inversión y Proyecciones</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-xl">
+                    <h3 class="text-2xl font-bold mb-3 text-blue-800">Desglose de la Inversión Inicial</h3>
+                    <p class="text-gray-600 mb-4">Se requiere una inversión total de $50.065.607 ARS para poner en marcha el proyecto, cubriendo equipamiento de primer nivel, obra y gastos iniciales para garantizar un lanzamiento exitoso.</p>
+                    <div class="chart-container" style="height: 350px;">
+                        <canvas id="investmentChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-xl">
+                    <h3 class="text-2xl font-bold mb-3 text-blue-800">Estructura de Costos Mensuales</h3>
+                    <p class="text-gray-600 mb-4">Nuestro modelo de negocio se basa en una estructura de costos optimizada. Los costos fijos se mantienen estables, mientras que los variables se ajustan a la demanda, permitiendo flexibilidad y control financiero.</p>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Categoría de Costo</th>
+                                    <th>Monto Mensual (ARS)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Costos Fijos Totales</td>
+                                    <td>$8,213,166</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8">Mano de Obra (con cargas)</td>
+                                    <td>$5,670,000</td>
+                                </tr>
+                                 <tr>
+                                    <td class="pl-8">Alquiler</td>
+                                    <td>$700,000</td>
+                                </tr>
+                                 <tr>
+                                    <td class="pl-8">Energía y Gas</td>
+                                    <td>$1,191,536</td>
+                                </tr>
+                                <tr>
+                                    <td class="pl-8">Otros (servicios, etc.)</td>
+                                    <td>$651,630</td>
+                                </tr>
+                                <tr>
+                                    <td>Costos Variables Totales (promedio)</td>
+                                    <td>$4,981,332</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Proyección Anual -->
+        <section class="mb-12 bg-white p-8 rounded-lg shadow-xl">
+            <h2 class="text-4xl font-bold text-center mb-8 text-blue-900">Proyecciones de Rentabilidad y Escenarios de Clientes</h2>
+             <p class="text-gray-600 text-center mb-6 max-w-3xl mx-auto">Basado en un escenario realista y positivo (900 clientes/mes), con un ticket promedio de $30.000, se proyecta una ganancia neta anual superior a los $170 millones de pesos. A continuación, se detallan las proyecciones para diferentes volúmenes de clientes.</p>
+            <h3 class="text-2xl font-bold mb-4 text-blue-800 text-center">Proyección Mensual</h3>
+            <p class="text-gray-600 text-center mb-4">(Escenario Base: 900 Clientes/Mes)</p>
+            <div class="chart-container" style="height: 50vh; max-width: 900px;">
+                <canvas id="financialProjectionChart"></canvas>
+            </div>
+             <div class="mt-8 table-container">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-blue-800 text-white">
+                        <tr>
+                            <th>Mes</th>
+                            <th>Ingresos ($)</th>
+                            <th>Costos Variables ($)</th>
+                            <th>Margen Bruto ($)</th>
+                            <th>Costos Fijos ($)</th>
+                            <th>Resultado Neto ($)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr><td>Ene</td><td>22.950.000</td><td>4.234.275</td><td>18.715.725</td><td>8.213.166</td><td class="font-semibold text-green-600">10.502.559</td></tr>
+                        <tr><td>Feb</td><td>24.300.000</td><td>4.483.350</td><td>19.816.650</td><td>8.213.166</td><td class="font-semibold text-green-600">11.603.484</td></tr>
+                        <tr><td>Mar</td><td>27.000.000</td><td>4.981.500</td><td>22.018.500</td><td>8.213.166</td><td class="font-semibold text-green-600">13.805.334</td></tr>
+                        <tr><td>Abr</td><td>28.350.000</td><td>5.230.575</td><td>23.119.425</td><td>8.213.166</td><td class="font-semibold text-green-600">14.906.259</td></tr>
+                        <tr><td>May</td><td>28.350.000</td><td>5.230.575</td><td>23.119.425</td><td>8.213.166</td><td class="font-semibold text-green-600">14.906.259</td></tr>
+                        <tr><td>Jun</td><td>27.000.000</td><td>4.981.500</td><td>22.018.500</td><td>8.213.166</td><td class="font-semibold text-green-600">13.805.334</td></tr>
+                        <tr><td>Jul</td><td>25.650.000</td><td>4.732.425</td><td>20.917.575</td><td>8.213.166</td><td class="font-semibold text-green-600">12.704.409</td></tr>
+                        <tr><td>Ago</td><td>24.300.000</td><td>4.483.350</td><td>19.816.650</td><td>8.213.166</td><td class="font-semibold text-green-600">11.603.484</td></tr>
+                        <tr><td>Sep</td><td>25.650.000</td><td>4.732.425</td><td>20.917.575</td><td>8.213.166</td><td class="font-semibold text-green-600">12.704.409</td></tr>
+                        <tr><td>Oct</td><td>29.700.000</td><td>5.479.650</td><td>24.220.350</td><td>8.213.166</td><td class="font-semibold text-green-600">16.007.184</td></tr>
+                        <tr><td>Nov</td><td>32.400.000</td><td>5.977.800</td><td>26.422.200</td><td>8.213.166</td><td class="font-semibold text-green-600">18.209.034</td></tr>
+                        <tr><td>Dic</td><td>35.100.000</td><td>6.475.950</td><td>28.624.050</td><td>8.213.166</td><td class="font-semibold text-green-600">20.410.884</td></tr>
+                        <tr class="font-bold bg-blue-100"><td>Total</td><td>330.750.000</td><td>61.023.375</td><td>269.726.625</td><td>98.557.992</td><td class="text-green-700">171.168.633</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <h3 class="text-2xl font-bold mt-8 mb-4 text-blue-800 text-center">Proyección Anual de Resultado Neto por Volumen de Clientes</h3>
+            <p class="text-gray-600 text-center mb-4">Esta tabla resume el resultado neto anual proyectado para diferentes volúmenes de clientes mensuales, destacando la escalabilidad del negocio.</p>
+            <div class="chart-container" style="height: 40vh; max-width: 700px;">
+                <canvas id="clientVolumeProjectionChart"></canvas>
+            </div>
+            <div class="mt-8 table-container">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-blue-800 text-white">
+                        <tr>
+                            <th>Clientes por Mes</th>
+                            <th>Ingresos Anuales ($)</th>
+                            <th>Costos Variables Anuales ($)</th>
+                            <th>Margen Bruto Anual ($)</th>
+                            <th>Resultado Neto Anual ($)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr><td>300</td><td>$108,000,000</td><td>$19,922,400</td><td>$88,077,600</td><td class="font-semibold text-red-600">-$10,480,392</td></tr>
+                        <tr><td>600</td><td>$216,000,000</td><td>$39,844,800</td><td>$176,155,200</td><td class="font-semibold text-green-600">$77,597,208</td></tr>
+                        <tr><td>900 (Escenario Base)</td><td>$324,000,000</td><td>$59,767,200</td><td>$264,232,800</td><td class="font-semibold text-green-600">$171,168,633</td></tr>
+                        <tr><td>1200</td><td>$432,000,000</td><td>$79,689,600</td><td>$352,310,400</td><td class="font-semibold text-green-600">$253,752,408</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ROI & KPIs -->
+        <section class="mb-12">
+            <h2 class="text-4xl font-bold text-center mb-8 text-blue-900">Retorno de la Inversión (ROI) y Escenarios</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-xl">
+                    <h3 class="text-2xl font-bold mb-3 text-blue-800 text-center">ROI por Escenario</h3>
+                    <p class="text-gray-600 mb-4 text-center">El potencial de retorno es significativo, incluso en un escenario conservador, con un tiempo de recuperación de la inversión inicial inferior a un año.</p>
+                    <div class="chart-container" style="height: 350px;">
+                        <canvas id="roiChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-xl">
+                    <h3 class="text-2xl font-bold mb-3 text-blue-800">Tiempo de Recuperación vs. Clientes</h3>
+                    <div class="chart-container" style="height: 350px;">
+                        <canvas id="recoveryTimeChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-xl">
+                    <h3 class="text-2xl font-bold mb-3 text-blue-800">Indicadores Clave de Rendimiento</h3>
+                    <p class="text-gray-600 mb-4">Métricas que demuestran la viabilidad y solidez del modelo de negocio.</p>
+                     <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Indicador</th>
+                                    <th>Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Punto de Equilibrio (en Pesos)</td>
+                                    <td class="font-semibold">$10,071,325 ARS</td>
+                                </tr>
+                                <tr>
+                                    <td>Punto de Equilibrio (en Personas)</td>
+                                    <td class="font-semibold">336 Clientes/Mes</td>
+                                </tr>
+                                <tr>
+                                    <td>Margen de Contribución Promedio</td>
+                                    <td class="font-semibold">81.55%</td>
+                                </tr>
+                                <tr>
+                                    <td>Margen de Seguridad (Escenario Positivo)</td>
+                                    <td class="font-semibold text-green-600">62.69%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gemini API Integration Section -->
+        <section class="mb-12 bg-white p-8 rounded-lg shadow-xl">
+            <h2 class="text-4xl font-bold text-center mb-8 text-blue-900">Preguntas Frecuentes para Inversores</h2>
+            <p class="text-gray-600 text-center mb-6 max-w-3xl mx-auto">Utiliza nuestro asistente impulsado por IA para obtener respuestas rápidas a tus preguntas sobre el proyecto Ongaku.</p>
+            <div class="flex flex-col items-center space-y-4">
+                <textarea id="investorQuestion" class="w-full md:w-2/3 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4" placeholder="Escribe tu pregunta aquí (ej: ¿Cuál es la inversión inicial total? o ¿Quién es el público objetivo?)"></textarea>
+                <button id="askGeminiButton" class="bg-blue-800 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center">
+                    <span id="buttonText">Preguntar</span>
+                    <div id="loadingSpinner" class="loading-spinner ml-2 hidden"></div>
+                </button>
+                <div id="geminiResponse" class="w-full md:w-2/3 p-6 mt-6 bg-blue-50 border border-blue-200 rounded-lg text-gray-800 min-h-[100px] flex items-center justify-center text-center">
+                    <p>La respuesta de Gemini aparecerá aquí.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conclusión -->
+        <section class="bg-blue-900 text-white py-12 px-8 rounded-lg shadow-xl">
+            <h2 class="text-4xl font-bold text-center mb-4">Una Inversión con Visión</h2>
+            <p class="text-lg text-center max-w-4xl mx-auto font-light">
+                Ongaku - Listening Bar no es solo un bar; es una propuesta de negocio sólida y diferenciada que capitaliza una tendencia global creciente de los "listening bars" y la fascinación por la cultura japonesa. A pesar de operar en un nicho de mercado, su identidad clara, su enfoque intransigente en la alta fidelidad musical y la excelencia gastronómica japonesa, y sus proyecciones financieras demuestran un alto potencial de rentabilidad y un riesgo inherentemente bajo. La capacidad de cubrir los gastos mensuales con un margen de seguridad considerable y la proyección de un rápido retorno de la inversión, incluso en escenarios conservadores, posiciona a Ongaku como una oportunidad de inversión excepcional. Estamos convencidos de que Ongaku será un espacio único en Buenos Aires, donde los clientes fieles buscarán una experiencia particular e inigualable, asegurando así su éxito y crecimiento sostenido en el tiempo.
+            </p>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Function to wrap labels for better display in charts
+            const wrapLabel = (label) => {
+                const words = label.split(' ');
+                // Use a reasonable max characters per line for better legend readability
+                const maxCharsPerLine = 15; // Adjusted for better single-line fit if possible, or clean break
+
+                if (label.length <= maxCharsPerLine) {
+                    return label; // If short enough, keep as single line
+                }
+
+                const lines = [];
+                let currentLine = '';
+                words.forEach(word => {
+                    if ((currentLine + ' ' + word).trim().length > maxCharsPerLine && currentLine !== '') {
+                        lines.push(currentLine.trim());
+                        currentLine = word;
+                    } else {
+                        currentLine += ' ' + word;
+                    }
+                });
+                lines.push(currentLine.trim());
+                return lines.filter(line => line !== ''); // Remove empty lines
+            };
+
+
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                    return label.join(' ');
+                } else {
+                    return label;
+                }
+            };
+            
+            const tooltipLabelCallback = function(context) {
+                let label = context.dataset.label || '';
+                if (label) {
+                    label += ': ';
+                }
+                if (context.chart.config.type === 'doughnut') {
+                    label += new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(context.raw);
+                } else if (context.parsed.y !== null) {
+                    label += new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(context.parsed.y);
+                }
+                return label;
+            };
+
+            const tooltipPercentageCallback = function(tooltipItem, data) {
+                 const dataset = data.datasets[tooltipItem.datasetIndex];
+                 const total = dataset.data.reduce((sum, value) => sum + value, 0);
+                 const currentValue = dataset.data[tooltipItem.dataIndex];
+                 const percentage = Math.round((currentValue / total) * 100);
+                 return `${data.labels[tooltipItem.dataIndex]}: ${percentage}%`;
+            };
+
+            // Gender Distribution Chart
+            const genderCtx = document.getElementById('genderDistributionChart').getContext('2d');
+            new Chart(genderCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Mujeres', 'Hombres'],
+                    datasets: [{
+                        label: 'Distribución de Género en Palermo',
+                        data: [55, 45],
+                        backgroundColor: ['#00B4D8', '#023E8A'],
+                        borderColor: '#F3F4F6',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { size: 14, family: 'Inter' },
+                                color: '#374151'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Investment Chart
+            const investmentCtx = document.getElementById('investmentChart').getContext('2d');
+            new Chart(investmentCtx, {
+                type: 'doughnut',
+                data: {
+                    // Labels now directly provided to avoid complex wrapping issues for the legend
+                    labels: [
+                        'Equip. Salón',
+                        'Equip. Cocina',
+                        'Habilitación',
+                        'Diseño y Mkt',
+                        'Uniformes',
+                        'Obra',
+                        'Insonorización'
+                    ],
+                    datasets: [{
+                        data: [27251188, 6390899, 571020, 1370000, 332500, 11550000, 2600000],
+                        backgroundColor: ['#023E8A', '#0077B6', '#0096C7', '#00B4D8', '#48CAE4', '#90E0EF', '#ADE8F4'],
+                        borderColor: '#F3F4F6',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                             labels: {
+                                font: { size: 12, family: 'Inter' },
+                                color: '#374151',
+                                boxWidth: 20,
+                                padding: 10
+                            }
+                        },
+                        tooltip: {
+                             callbacks: {
+                                title: tooltipTitleCallback,
+                                label: tooltipLabelCallback
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Financial Projection Chart (Monthly - Base Scenario 900 clients)
+            const financialProjectionChartId = 'financialProjectionChart';
+            let financialProjectionChartInstance = null;
+
+            const createFinancialProjectionChart = () => {
+                const projectionCtx = document.getElementById(financialProjectionChartId).getContext('2d');
+                if (financialProjectionChartInstance) {
+                    financialProjectionChartInstance.destroy();
+                }
+                financialProjectionChartInstance = new Chart(projectionCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                        datasets: [{
+                            label: 'Ingresos',
+                            data: [22950000, 24300000, 27000000, 28350000, 28350000, 27000000, 25650000, 24300000, 25650000, 29700000, 32400000, 35100000],
+                            backgroundColor: '#00B4D8',
+                            borderColor: '#0096C7',
+                            borderWidth: 1
+                        }, {
+                            label: 'Resultado Neto',
+                            data: [10502559, 11603484, 13805334, 14906259, 14906259, 13805334, 12704409, 11603484, 12704409, 16007184, 18209034, 20410884],
+                            backgroundColor: '#023E8A',
+                            borderColor: '#003366',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value, index, values) {
+                                        return (value / 1000000) + 'M';
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                 labels: {
+                                    font: { size: 14, family: 'Inter' },
+                                    color: '#374151'
+                                }
+                            },
+                             tooltip: {
+                                 callbacks: {
+                                    title: tooltipTitleCallback,
+                                    label: tooltipLabelCallback
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+            // Client Volume Projection Chart (Annual Net Result)
+            const clientVolumeProjectionChartId = 'clientVolumeProjectionChart';
+            let clientVolumeProjectionChartInstance = null;
+
+            const createClientVolumeProjectionChart = () => {
+                const clientVolumeCtx = document.getElementById(clientVolumeProjectionChartId).getContext('2d');
+                if (clientVolumeProjectionChartInstance) {
+                    clientVolumeProjectionChartInstance.destroy();
+                }
+                clientVolumeProjectionChartInstance = new Chart(clientVolumeCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['300 Clientes/Mes', '600 Clientes/Mes', '900 Clientes/Mes', '1200 Clientes/Mes'],
+                        datasets: [{
+                            label: 'Resultado Neto Anual',
+                            data: [-10480392, 77597208, 171168633, 253752408],
+                            backgroundColor: [
+                                '#FF6384',
+                                '#4CAF50',
+                                '#023E8A',
+                                '#00B4D8'
+                            ],
+                            borderColor: [
+                                '#E53935',
+                                '#388E3C',
+                                '#003366',
+                                '#0096C7'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value, index, values) {
+                                        return (value / 1000000) + 'M';
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    title: tooltipTitleCallback,
+                                    label: tooltipLabelCallback
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+            // ROI Chart
+            const roiChartId = 'roiChart';
+            let roiChartInstance = null;
+
+            const createRoiChart = () => {
+                const roiCtx = document.getElementById(roiChartId).getContext('2d');
+                if (roiChartInstance) {
+                    roiChartInstance.destroy();
+                }
+                roiChartInstance = new Chart(roiCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Negativo Realista (3 años)', 'Conservador', 'Positivo'],
+                        datasets: [{
+                            label: 'ROI Anual (%)',
+                            data: [33.3, 179.8, 341.9],
+                            backgroundColor: [
+                                '#F9A825',
+                                '#4CAF50',
+                                '#FF6384'
+                            ],
+                            borderColor: [
+                                '#F57F17',
+                                '#388E3C',
+                                '#E53935'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `ROI: ${context.raw.toFixed(1)}%`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+            // Recovery Time Chart
+            const recoveryTimeChartId = 'recoveryTimeChart';
+            let recoveryTimeChartInstance = null;
+
+            const createRecoveryTimeChart = () => {
+                const recoveryCtx = document.getElementById(recoveryTimeChartId).getContext('2d');
+                if (recoveryTimeChartInstance) {
+                    recoveryTimeChartInstance.destroy();
+                }
+
+                // Data points: { x: tiempo_recuperacion_meses, y: clientes_por_mes }
+                const dataPoints = [
+                    { x: 7.74, y: 600 },
+                    { x: 3.51, y: 900 },
+                    { x: 2.37, y: 1200 }
+                ];
+
+                // Sort data by X-axis for correct line drawing and interpolation
+                dataPoints.sort((a, b) => a.x - b.x);
+
+                recoveryTimeChartInstance = new Chart(recoveryCtx, {
+                    type: 'line',
+                    data: {
+                        datasets: [{
+                            label: 'Tiempo de Recuperación',
+                            data: dataPoints,
+                            backgroundColor: '#0077B6',
+                            borderColor: '#0077B6',
+                            borderWidth: 2,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#023E8A',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                title: {
+                                    display: true,
+                                    text: 'Tiempo de Recuperación (Meses)',
+                                    font: { size: 14, family: 'Inter' },
+                                    color: '#374151'
+                                },
+                                ticks: {
+                                    min: 0,
+                                    max: 8,
+                                    stepSize: 1,
+                                    callback: function(value) {
+                                        return value + ' meses';
+                                    }
+                                }
+                            },
+                            y: {
+                                type: 'linear',
+                                title: {
+                                    display: true,
+                                    text: 'Clientes por Mes',
+                                    font: { size: 14, family: 'Inter' },
+                                    color: '#374151'
+                                },
+                                ticks: {
+                                    min: 300,
+                                    max: 1200,
+                                    stepSize: 50,
+                                    callback: function(value) {
+                                        return value;
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        const chart = context.chart;
+                                        const dataset = chart.data.datasets[context.datasetIndex];
+                                        
+                                        // Get the X-axis value (Tiempo de Recuperación) at the cursor's pixel position
+                                        const xValueAtCursor = chart.scales.x.getValueForPixel(context.x);
+                                        
+                                        // Find the two nearest data points to interpolate between
+                                        let p1 = null;
+                                        let p2 = null;
+                                        for (let i = 0; i < dataset.data.length; i++) {
+                                            const point = dataset.data[i];
+                                            if (point.x <= xValueAtCursor) {
+                                                p1 = point;
+                                            } else if (point.x > xValueAtCursor) {
+                                                p2 = point;
+                                                break;
+                                            }
+                                        }
+
+                                        let interpolatedY = null;
+                                        if (p1 && p2) {
+                                            interpolatedY = p1.y + (p2.y - p1.y) * ((xValueAtCursor - p1.x) / (p2.x - p1.x));
+                                        } else if (p1) {
+                                            interpolatedY = p1.y;
+                                        } else if (p2) {
+                                            interpolatedY = p2.y;
+                                        }
+
+                                        if (interpolatedY !== null) {
+                                            return `Recuperación: ${xValueAtCursor.toFixed(2)} meses, Clientes: ${interpolatedY.toFixed(0)}`;
+                                        }
+                                        return `Recuperación: ${xValueAtCursor.toFixed(2)} meses`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+
+            // Initialize all charts on DOMContentLoaded
+            createFinancialProjectionChart();
+            createClientVolumeProjectionChart();
+            createRoiChart();
+            createRecoveryTimeChart();
+
+
+            // Gemini API Integration Logic
+            const askGeminiButton = document.getElementById('askGeminiButton');
+            const investorQuestionInput = document.getElementById('investorQuestion');
+            const geminiResponseDiv = document.getElementById('geminiResponse');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const buttonText = document.getElementById('buttonText');
+
+            const documentContext = `
+                El proyecto se llama Ongaku Listening Bar, inspirado en los Jazz Kissa japoneses.
+                Ubicación: Palermo, CABA.
+                Público objetivo: Mujeres y hombres de 25 a 40 años con buen poder adquisitivo, amantes de la música (alta fidelidad, vinilos), cultura japonesa, foodies, y turistas internacionales.
+                Capacidad del local: 30-35 comensales por turno, 60 comensales por noche.
+                Ticket Promedio por persona: $30,000 ARS.
+                Inversión inicial total: $50,065,607 ARS (aproximadamente $43,347 USD).
+                Costos Fijos Mensuales: $8,213,166 ARS.
+                    - Mano de Obra (con cargas sociales): $5,670,000 ARS.
+                    - Alquiler: $700,000 ARS.
+                    - Energía y Gas: $1,191,536 ARS.
+                    - Otros costos fijos: $651,630 ARS.
+                Costos Variables Mensuales (promedio): $4,981,332 ARS.
+                    - Pescadería: $667,696 ARS.
+                    - Verdulería: $193,124 ARS.
+                    - Coca-cola femsa: $395,068 ARS.
+                    - Ivess (agua y soda): $74,000 ARS.
+                    - Pesca blanca (barrio chino): $183,932 ARS.
+                    - Criollo (insumos varios): $155,338 ARS.
+                    - Pollo: $120,000 ARS.
+                    - Kometo (importador insumos japoneses): $376,740 ARS.
+                    - Langostinos: $126,000 ARS.
+                    - Bebidas alcohólicas: $2,689,434 ARS.
+
+                Proyecciones de Clientes y Rentabilidad Anual:
+                - 300 Clientes/Mes: Ingresos Anuales = $108,000,000 ARS, Costos Variables Anuales = $19,922,400 ARS, Margen Bruto Anual = $88,077,600 ARS, Resultado Neto Anual = -$10,480,392 ARS (pérdida).
+                - 600 Clientes/Mes: Ingresos Anuales = $216,000,000 ARS, Costos Variables Anuales = $39,844,800 ARS, Margen Brutol Anual = $176,155,200 ARS, Resultado Neto Anual = $77,597,208 ARS. Tiempo de Recuperación = 7.74 meses.
+                - 900 Clientes/Mes (Escenario Base/Positivo): Ingresos Anuales = $324,000,000 ARS, Costos Variables Anuales = $59,767,200 ARS, Margen Bruto Anual = $264,232,800 ARS, Resultado Neto Anual = $171,168,633 ARS. Tiempo de Recuperación = 3.51 meses.
+                - 1200 Clientes/Mes: Ingresos Anuales = $432,000,000 ARS, Costos Variables Anuales = $79,689,600 ARS, Margen Bruto Anual = $352,310,400 ARS, Resultado Neto Anual = $253,752,408 ARS. Tiempo de Recuperación = 2.37 meses.
+
+                ROI Anual Proyectado (Escenario Positivo - 900 clientes/mes): 341.8%, recuperación en 4 meses.
+                ROI Anual Proyectado (Escenario Conservador): 179.8%, recuperación en 7 meses.
+                ROI Anual Proyectado (Escenario Negativo Realista): 33.3%, recuperación en 3 años.
+                Punto de Equilibrio (en Pesos): $10,071,325 ARS.
+                Punto de Equilibrio (en Personas): 336 clientes/mes.
+                Margen de Seguridad (Escenario Positivo): 62.69%.
+
+                Competencia Local en Buenos Aires:
+                - Bim-binilo (Recoleta): Enfocado en curaduría musical y coctelería. Limitaciones de espacio y reservas.
+                - Victor Audio Bar (Palermo): Coctelería clásica y equipos de audio innovadores. Capacidad limitada.
+                - Mixtape (Núñez): Alta gastronomía (omakase) y equipo de renombre. Capacidad y visibilidad limitadas.
+
+                Fenómeno Global de los Listening Bars:
+                - Tendencia en auge mundialmente (NY, Londres, CDMX, Barcelona, Japón).
+                - Responde a la demanda de experiencias sociales íntimas y de alta calidad.
+                - La música es el foco principal, acompañada de gastronomía y bebidas premium.
+            `;
+
+            askGeminiButton.addEventListener('click', async () => {
+                const question = investorQuestionInput.value.trim();
+                if (!question) {
+                    geminiResponseDiv.innerHTML = '<p class="text-red-600">Por favor, escribe una pregunta.</p>';
+                    return;
+                }
+
+                geminiResponseDiv.innerHTML = '<p>Generando respuesta...</p>';
+                loadingSpinner.classList.remove('hidden');
+                buttonText.classList.add('hidden');
+                askGeminiButton.disabled = true;
+
+                try {
+                    let chatHistory = [];
+                    const prompt = `Eres un asistente experto en negocios. Basándote EXCLUSIVAMENTE en la siguiente información sobre el proyecto 'Ongaku Listening Bar', responde a la pregunta del usuario. Si la información no está disponible en el texto, indica que no puedes responder esa pregunta con los datos proporcionados.
+
+---
+${documentContext}
+---
+
+Pregunta del usuario: ${question}`;
+
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = "";
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    console.log('Sending request to Gemini API...');
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    console.log('API Response status:', response.status);
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('API Response not OK:', errorText);
+                        throw new Error(`API response was not OK: ${response.status} - ${errorText}`);
+                    }
+
+                    const result = await response.json();
+                    console.log('API Response result:', result);
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        geminiResponseDiv.innerHTML = `<p>${text}</p>`;
+                    } else {
+                        geminiResponseDiv.innerHTML = '<p class="text-red-600">No se pudo obtener una respuesta. Intenta de nuevo. (Respuesta de IA vacía o malformada)</p>';
+                    }
+                } catch (error) {
+                    console.error('Error calling Gemini API:', error);
+                    geminiResponseDiv.innerHTML = '<p class="text-red-600">Ocurrió un error al comunicarse con la IA. Por favor, inténtalo más tarde.</p>';
+                } finally {
+                    loadingSpinner.classList.add('hidden');
+                    buttonText.classList.remove('hidden');
+                    askGeminiButton.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
